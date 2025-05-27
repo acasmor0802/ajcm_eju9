@@ -13,4 +13,14 @@ class LineaPedidoService() : ILineaPedidoService {
     override fun crear(idPedido: Int, idProducto: Int, cantidad: Int, precio: Double) {
         dao.insertar(LineaPedido(cantidad = cantidad, precio = precio, idPedido = idPedido, idProducto = idProducto))
     }
+
+    /**
+     * Actualiza la línea de pedido con id dado, para cambiar producto y precio.
+     * @param idLinea Id de la línea a modificar.
+     * @param idProducto Nuevo id de producto para la línea.
+     * @param nuevoPrecio Nuevo precio a asignar.
+     */
+    override fun actualizarLineaPedido(idLinea: Int, idProducto: Int, nuevoPrecio: Double) {
+        dao.actualizarLineaPorId(idLinea, idProducto, nuevoPrecio)
+    }
 }

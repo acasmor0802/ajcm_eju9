@@ -2,11 +2,11 @@
 
 ## Enunciado original
 
-#### Eliminaciones con manejo de errores
-- Elimina al usuario "Cornelio Ramírez".
-- Elimina el producto con un precio de 24,99 €.
-- Elimina el pedido con id igual a 3, asegurándote de eliminar primero sus líneas de pedido si existieran.
-
+#### Ejercicio 5: Modificaciones con manejo de errores¶
+- Modifica el precio del producto «Abanico» para ponerlo en oferta (por ejemplo, 120 €).
+- Modifica la línea de pedido con id = 3:
+- Cambia el producto a "Abanico" (id = 2)
+- Cambia el precio al doble del precio actual del "Abanico".
 ### Inserciones a realizar desde Kotlin:
 
 ```sql
@@ -47,54 +47,39 @@ INSERT INTO LineaPedido (idPedido, idProducto, cantidad, precio) VALUES
 
 ### Funcionalidades implementadas
 
-#### **UsuarioService**
-- Este metodo se encarga de eliminar a los usuarios, en caso en el que no exista dicho usuario, lanzaría un error.
+#### **LineaPedidoService**
+- Proporciona un método para actualizar una línea de pedido específica, modificando el producto y el precio asignados.
+- En caso de intentar eliminar un usuario inexistente, se lanzará un error para un manejo controlado.
 ```
     /**
-     * Elimina un usuario por nombre.
-     * @throws IllegalArgumentException si no existe ningún usuario con ese nombre.
+     * Actualiza la línea de pedido con id dado, para cambiar producto y precio.
+     * @param idLinea Id de la línea a modificar.
+     * @param idProducto Nuevo id de producto para la línea.
+     * @param nuevoPrecio Nuevo precio a asignar.
      */
-    override fun eliminarPorNombre(nombre: String) {
-        val filas = dao.eliminarPorNombre(nombre)
-        if (filas == 0) {
-            throw IllegalArgumentException("No existe ningún usuario con nombre \"$nombre\"")
-        }
+    override fun actualizarLineaPedido(idLinea: Int, idProducto: Int, nuevoPrecio: Double) {
+        dao.actualizarLineaPorId(idLinea, idProducto, nuevoPrecio)
     }
 ```
 #### **ProductoService**
-- Elimina los productos que tengan el mismo precio al ingresado en el main.
+- Permite actualizar el precio de un producto dado, por ejemplo para poner un producto "en oferta".
 ```
     /**
-     * Elimina todos los productos que tengan exactamente ese precio.
-     * @return número de filas eliminadas.
+     * Actualiza el precio de un producto llamando a la capa DAO.
+     * @param idProducto Id del producto a modificar.
+     * @param nuevoPrecio Nuevo precio a asignar.
      */
-
-    override fun eliminarPorPrecio(precio: Double): Int {
-        return dao.eliminarPorPrecio(precio)
-    }
-```
-#### **PedidoService**
-- En este metodo se eliminan todas las lineas de pedido relacionadas con un pedido y luego el pedido con ese id.
-- Si ocurre el error `if (pedidosBorrados == 0)` se lanza un exception. 
-```
-/**
-* Elimina todas las líneas de pedido asociadas al pedido y luego el pedido mismo.
-* Lanza IllegalArgumentException si no existe ningún pedido con ese id.
-*/
-override fun eliminarConLineas(idPedido: Int) {
-lineaDao.eliminarPorPedido(idPedido)
-
-        // Borrar el pedido y chequear cuántos se eliminaron
-        val pedidosBorrados = dao.eliminarPorId(idPedido)
-        if (pedidosBorrados == 0) {
-            throw IllegalArgumentException("No existe ningún pedido con id=$idPedido")
-        }
+    override fun actualizarPrecioProducto(idProducto: Int, nuevoPrecio: Double) {
+        dao.actualizarPrecio(idProducto, nuevoPrecio)
     }
 ```
 
 ### Ejemplo de uso en el Main
 
-El siguiente ejemplo muestra cómo utilizar los servicios desde `main` para insertar registros y realizar las operaciones de borrado solicitadas, todo dentro de un bloque de transacción y con manejo de errores:
+El siguiente ejemplo muestra cómo utilizar los servicios desde `main` para:
+- Insertar registros (usuarios, productos, pedidos y líneas de pedido).
+- Realizar las modificaciones solicitadas por el ejercicio (poner un producto en oferta, modificar una línea de pedido).
+- Manejar transacciones y control de errores para hacer commit sólo si todo va bien y rollback en caso contrario.
 
 ```kotlin
 fun main() {
@@ -129,26 +114,18 @@ fun main() {
                 lineaPedidoService.crear(2, 1, 2, 20.0)
                 lineaPedidoService.crear(3, 2, 1, 150.0)
 
-                // Ejercicio 4: Eliminaciones con manejo de errores
-                println("=== Ejercicio 4: Eliminaciones ===")
+                // --- Aquí inicia la parte del nuevo ejercicio ---
 
-                // 1. Eliminar usuario "Cornelio Ramírez"
+                // 1. Poner producto "Abanico" (id=2) en oferta con precio 120.0
+                productoService.actualizarPrecioProducto(idProducto = 2, nuevoPrecio = 120.0)
+                println("Precio de producto 'Abanico' actualizado a 120.0 € (oferta)")
 
-                usuarioService.eliminarPorNombre("Cornelio Ramírez")
-                println("Usuario 'Cornelio Ramírez' eliminado.")
+                // 2. Actualizar línea de pedido con id=3:
+                // Cambiar producto a "Abanico" (id=2)
+                // Cambiar precio al doble del precio actualizado de Abanico (2 * 120 = 240)
+                lineaPedidoService.actualizarLineaPedido(idLinea = 3, idProducto = 2, nuevoPrecio = 240.0)
+                println("Línea de pedido id=3 actualizada: producto cambiado a 'Abanico' y precio a 240.0 €")
 
-                // 2. Eliminar producto con precio 24.99
-                val eliminadosProd = productoService.eliminarPorPrecio(25.0)
-                if (eliminadosProd > 0) {
-                    println("Producto(s) con precio 24.99 eliminado(s): $eliminadosProd")
-                } else {
-                    println("No se encontró ningún producto con precio 24.99.")
-                }
-
-                // 3. Eliminar pedido id=3 (primero sus líneas)
-
-                pedidoService.eliminarConLineas(3)
-                println("Pedido id=3 y sus líneas eliminados.")
 
                 connection.commit()
 
@@ -166,10 +143,13 @@ fun main() {
         println("Error: ${e.message}")
     }
 }
+
 ```
-1. Inserción de datos de usuarios, productos, pedidos y líneas de pedido.
-2. Eliminación controlada según el enunciado (usuario, producto a un precio dado y pedido junto a sus líneas).
-3. Transacciones y manejo de errores.
+1. Inserción de datos: usuarios, productos, pedidos y líneas de pedido.
+2. Modificación controlada de productos y líneas de pedido según el enunciado.
+3. Gestión de transacciones con commit y rollback para asegurar la integridad.
+4. Manejo de errores para control y retroceso en caso de problemas durante la ejecución.
+
 
 ---
 

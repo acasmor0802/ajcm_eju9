@@ -1,6 +1,5 @@
 import data.Database
 import service.*
-import java.sql.Connection
 import java.sql.SQLException
 
 fun main() {
@@ -35,26 +34,18 @@ fun main() {
                 lineaPedidoService.crear(2, 1, 2, 20.0)
                 lineaPedidoService.crear(3, 2, 1, 150.0)
 
-                // Ejercicio 4: Eliminaciones con manejo de errores
-                println("=== Ejercicio 4: Eliminaciones ===")
+                // --- Aquí inicia la parte del nuevo ejercicio ---
 
-                // 1. Eliminar usuario "Cornelio Ramírez"
+                // 1. Poner producto "Abanico" (id=2) en oferta con precio 120.0
+                productoService.actualizarPrecioProducto(idProducto = 2, nuevoPrecio = 120.0)
+                println("Precio de producto 'Abanico' actualizado a 120.0 € (oferta)")
 
-                usuarioService.eliminarPorNombre("Cornelio Ramírez")
-                println("Usuario 'Cornelio Ramírez' eliminado.")
+                // 2. Actualizar línea de pedido con id=3:
+                // Cambiar producto a "Abanico" (id=2)
+                // Cambiar precio al doble del precio actualizado de Abanico (2 * 120 = 240)
+                lineaPedidoService.actualizarLineaPedido(idLinea = 3, idProducto = 2, nuevoPrecio = 240.0)
+                println("Línea de pedido id=3 actualizada: producto cambiado a 'Abanico' y precio a 240.0 €")
 
-                // 2. Eliminar producto con precio 24.99
-                val eliminadosProd = productoService.eliminarPorPrecio(25.0)
-                if (eliminadosProd > 0) {
-                    println("Producto(s) con precio 24.99 eliminado(s): $eliminadosProd")
-                } else {
-                    println("No se encontró ningún producto con precio 24.99.")
-                }
-
-                // 3. Eliminar pedido id=3 (primero sus líneas)
-
-                pedidoService.eliminarConLineas(3)
-                println("Pedido id=3 y sus líneas eliminados.")
 
                 connection.commit()
 

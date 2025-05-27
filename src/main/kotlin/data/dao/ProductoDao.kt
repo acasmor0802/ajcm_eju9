@@ -42,4 +42,26 @@ class ProductoDao() : IProductoDao {
             throw SQLException("Error al eliminar Producto")
         }
     }
+
+    /**
+     * Actualiza el precio de un producto dado su id.
+     * @param idProducto Identificador del producto a modificar.
+     * @param nuevoPrecio Nuevo valor para el precio.
+     * @return número de filas afectadas (debería ser 1 si el producto existe).
+     * @throws SQLException Si ocurre un error en la base de datos.
+     */
+    override fun actualizarPrecio(idProducto: Int, nuevoPrecio: Double): Int {
+        try {
+            Database.getConnection().use { connection ->
+                val sql = "UPDATE Producto SET precio = ? WHERE id = ?"
+                connection.prepareStatement(sql).use { stmt ->
+                    stmt.setDouble(1, nuevoPrecio)
+                    stmt.setInt(2, idProducto)
+                    return stmt.executeUpdate()
+                }
+            }
+        } catch (ex: SQLException) {
+            throw SQLException("Error al actualizar precio de Producto")
+        }
+    }
 }

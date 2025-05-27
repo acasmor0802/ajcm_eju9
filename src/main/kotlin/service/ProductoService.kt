@@ -22,4 +22,14 @@ class ProductoService() : IProductoService {
     override fun eliminarPorPrecio(precio: Double): Int {
         return dao.eliminarPorPrecio(precio)
     }
+
+    /**
+     * Actualiza el precio de un producto llamando a la capa DAO.
+     * @param idProducto Id del producto a modificar.
+     * @param nuevoPrecio Nuevo precio a asignar.
+     */
+    override fun actualizarPrecioProducto(idProducto: Int, nuevoPrecio: Double) {
+        dao.actualizarPrecio(idProducto, nuevoPrecio)
+    }
+
 }

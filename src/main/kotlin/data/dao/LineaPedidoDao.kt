@@ -39,4 +39,28 @@ class LineaPedidoDao() : ILineaPedidoDao {
             throw SQLException("Error eliminar LineaPedido")
         }
     }
+
+    /**
+     * Actualiza una línea de pedido según su id, cambiando el producto y el precio.
+     * @param idLinea Id de la línea de pedido a actualizar.
+     * @param idProducto Nuevo id de producto para la línea.
+     * @param nuevoPrecio Nuevo precio para la línea.
+     * @return número de filas afectadas (debería ser 1 si existe la línea).
+     * @throws SQLException Si ocurre un error de base de datos.
+     */
+    override fun actualizarLineaPorId(idLinea: Int, idProducto: Int, nuevoPrecio: Double): Int {
+        try {
+            Database.getConnection().use { connection ->
+                val sql = "UPDATE LineaPedido SET idProducto = ?, precio = ? WHERE id = ?"
+                connection.prepareStatement(sql).use { stmt ->
+                    stmt.setInt(1, idProducto)
+                    stmt.setDouble(2, nuevoPrecio)
+                    stmt.setInt(3, idLinea)
+                    return stmt.executeUpdate()
+                }
+            }
+        } catch (ex: SQLException) {
+            throw SQLException("Error al actualizar LineaPedido")
+        }
+    }
 }
