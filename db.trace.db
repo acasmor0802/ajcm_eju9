@@ -1,0 +1,15 @@
+2025-05-27 18:09:20.918938+02:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USUARIO" not found (this database is empty); SQL statement:
+INSERT INTO Usuario (nombre, email) VALUES (?, ?) [42104-232]
+2025-05-27 18:09:45.845725+02:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USUARIO" not found (this database is empty); SQL statement:
+INSERT INTO Usuario (nombre, email) VALUES (?, ?) [42104-232]
+2025-05-27 18:09:49.942720+02:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USUARIO" not found (this database is empty); SQL statement:
+INSERT INTO Usuario (nombre, email) VALUES (?, ?) [42104-232]
+2025-05-27 18:10:02.085335+02:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USUARIO" not found (this database is empty); SQL statement:
+INSERT INTO Usuario (nombre, email) VALUES (?, ?) [42104-232]
+2025-05-27 18:10:25.124620+02:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USUARIO" not found (this database is empty); SQL statement:
+INSERT INTO Usuario (nombre, email) VALUES (?, ?) [42104-232]

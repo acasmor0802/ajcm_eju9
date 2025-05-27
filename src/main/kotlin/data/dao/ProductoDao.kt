@@ -6,9 +6,9 @@ import java.sql.Connection
 import java.sql.SQLException
 import kotlin.io.use
 
-class ProductoDao() {
+class ProductoDao() : IProductoDao {
     // Esta función prepara y ejecuta un SQL con los datos del objeto.
-     fun insertar(producto: Producto) {
+    override fun insertar(producto: Producto) {
         try {
             Database.getConnection().use { connection ->
                 val sql = "INSERT INTO Producto (nombre, precio, stock) VALUES (?, ?, ?)"
@@ -19,8 +19,27 @@ class ProductoDao() {
                     stmt.executeUpdate()
                 }
             }
-        } catch (e: SQLException) {
-            throw SQLException("Error al insertar producto")
+        } catch (ex: SQLException) {
+            throw SQLException("Error al insertar Producto")
+        }
+    }
+
+    /**
+     * Elimina productos cuyo precio coincida.
+     * @return número de filas afectadas.
+     */
+
+    override fun eliminarPorPrecio(precio: Double): Int {
+        try {
+            Database.getConnection().use { connection ->
+                val sql = "DELETE FROM Producto WHERE precio = ?"
+                connection.prepareStatement(sql).use { stmt ->
+                    stmt.setDouble(1, precio)
+                    return stmt.executeUpdate()
+                }
+            }
+        } catch (ex: SQLException) {
+            throw SQLException("Error al eliminar Producto")
         }
     }
 }
