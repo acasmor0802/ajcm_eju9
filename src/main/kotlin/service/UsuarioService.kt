@@ -22,4 +22,9 @@ class UsuarioService() : IUsuarioService {
             throw IllegalArgumentException("No existe ningún usuario con nombre \"$nombre\"")
         }
     }
+
+    // Obtiene una lista de nombres de usuarios que han comprado un producto específico.
+    fun obtenerUsuariosQueCompraron(producto: String): List<String> {
+        return dao.obtenerUsuariosQueCompraronProducto(producto)
+    }
 }

@@ -34,4 +34,8 @@ class PedidoService() : IPedidoService {
             throw IllegalArgumentException("No existe ningún pedido con id=$idPedido")
         }
     }
+
+    override fun obtenerTotalGastadoPor(nombreUsuario: String): Double {
+        return dao.obtenerTotalGastadoPorUsuario(nombreUsuario)
+    }
 }

@@ -23,4 +23,8 @@ class LineaPedidoService() : ILineaPedidoService {
     override fun actualizarLineaPedido(idLinea: Int, idProducto: Int, nuevoPrecio: Double) {
         dao.actualizarLineaPorId(idLinea, idProducto, nuevoPrecio)
     }
+
+    override fun obtenerLineasDePedido(idPedido: Int): List<LineaPedido> {
+        return dao.obtenerPorPedido(idPedido)
+    }
 }

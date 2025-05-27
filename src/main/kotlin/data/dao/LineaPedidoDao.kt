@@ -63,4 +63,31 @@ class LineaPedidoDao() : ILineaPedidoDao {
             throw SQLException("Error al actualizar LineaPedido")
         }
     }
+
+    override fun obtenerPorPedido(idPedido: Int): List<LineaPedido> {
+        try {
+            Database.getConnection().use { connection ->
+                val lista = mutableListOf<LineaPedido>()
+                val sql = "SELECT * FROM LineaPedido WHERE idPedido = ?"
+                connection.prepareStatement(sql).use { stmt ->
+                    stmt.setInt(1, idPedido)
+                    stmt.executeQuery().use { rs ->
+                        while (rs.next()) {
+                            lista.add(
+                                LineaPedido(
+                                    cantidad = rs.getInt("cantidad"),
+                                    precio = rs.getDouble("precio"),
+                                    idPedido = rs.getInt("idPedido"),
+                                    idProducto = rs.getInt("idProducto")
+                                )
+                            )
+                        }
+                    }
+                }
+                return lista
+            }
+        } catch (e: SQLException) {
+            throw SQLException("Error al obtener el pedido")
+        }
+    }
 }
