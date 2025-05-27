@@ -2,68 +2,71 @@
 
 ## Enunciado original
 
-Creación de tablas e inserciones con manejo de errores¶
-Modelo Entidad-Relación:¶
 
-Código SQL para crear las tablas:¶
+### Esquema de Base de Datos
+
+#### Creación de tablas
+
+```sql
 CREATE TABLE Usuario (
-id INT AUTO_INCREMENT PRIMARY KEY,
-nombre VARCHAR(255) NOT NULL,
-email VARCHAR(255) UNIQUE
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE
 );
 
 CREATE TABLE Producto (
-id INT AUTO_INCREMENT PRIMARY KEY,
-nombre VARCHAR(255) NOT NULL,
-precio DECIMAL NOT NULL,
-stock INT NOT NULL
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(255) NOT NULL,
+  precio DECIMAL NOT NULL,
+  stock INT NOT NULL
 );
 
 CREATE TABLE Pedido (
-id INT AUTO_INCREMENT PRIMARY KEY,
-precioTotal DECIMAL NOT NULL,
-idUsuario INT,
-FOREIGN KEY (idUsuario) REFERENCES Usuario(id)
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  precioTotal DECIMAL NOT NULL,
+  idUsuario INT,
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(id)
 );
 
 CREATE TABLE LineaPedido (
-id INT AUTO_INCREMENT PRIMARY KEY,
-cantidad INT NOT NULL,
-precio DECIMAL NOT NULL,
-idPedido INT,
-idProducto INT,
-FOREIGN KEY (idPedido) REFERENCES Pedido(id),
-FOREIGN KEY (idProducto) REFERENCES Producto(id)
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cantidad INT NOT NULL,
+  precio DECIMAL NOT NULL,
+  idPedido INT,
+  idProducto INT,
+  FOREIGN KEY (idPedido) REFERENCES Pedido(id),
+  FOREIGN KEY (idProducto) REFERENCES Producto(id)
 );
-Inserciones a realizar desde Kotlin:¶
-Pista: los id son autoincrementales, por lo que no hace falta incluirlos en la inserción. Se asignan automáticamente.
+```
+### Inserciones a realizar desde Kotlin:¶
+#### Pista: los id son autoincrementales, por lo que no hace falta incluirlos en la inserción. Se asignan automáticamente.
 
-Usuarios
+```sql
+-- Usuarios
+INSERT INTO Usuario (nombre, email) VALUES
+  ('Facundo Pérez', 'facuper@mail.com'),
+  ('Ataulfo Rodríguez', 'ataurod@mail.com'),
+  ('Cornelio Ramírez', 'Cornram@mail.com');
 
-nombre	email
-Facundo Pérez	facuper@mail.com
-Ataulfo Rodríguez	ataurod@mail.com
-Cornelio Ramírez	Cornram@mail.com
-Productos
+-- Productos
+INSERT INTO Producto (nombre, precio, stock) VALUES
+  ('Ventilador', 10, 2),
+  ('Abanico', 150, 47),
+  ('Estufa', 24.99, 1);
 
-nombre	precio (€)	stock
-Ventilador	10	2
-Abanico	150	47
-Estufa	24.99	1
-Pedidos
+-- Pedidos
+INSERT INTO Pedido (idUsuario, precioTotal) VALUES
+  (2, 160),
+  (1, 20),
+  (2, 150);
 
-idUsuario	precioTotal (€)
-2	160
-1	20
-2	150
-Líneas de pedido
-
-idPedido	idProducto	cantidad	precio (€)
-1	1	1	10
-1	2	1	150
-2	1	2	20
-3	2	1	150
-
+-- Líneas de pedido
+INSERT INTO LineaPedido (idPedido, idProducto, cantidad, precio) VALUES
+  (1, 1, 1, 10),
+  (1, 2, 1, 150),
+  (2, 1, 2, 20),
+  (3, 2, 1, 150);
+```
 
 ## Resolución del ejercicio:
 ### Para hacer este ejercicio hice:
