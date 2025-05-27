@@ -5,21 +5,48 @@ import model.LineaPedido
 import java.sql.SQLException
 
 class LineaPedidoDao() {
-    // Esta función prepara y ejecuta un SQL con los datos del objeto.
-    fun insertar(lp: LineaPedido) {
-        try{
-            Database.getConnection().use { conn ->
+    // Inserta un nuevo linea de pedido en la base de datos.
+     fun insertar(linea: LineaPedido) {
+        try {
+            Database.getConnection().use { connection ->
                 val sql = "INSERT INTO LineaPedido (cantidad, precio, idPedido, idProducto) VALUES (?, ?, ?, ?)"
-                conn.prepareStatement(sql).use { stmt ->
-                    stmt.setInt(1, lp.cantidad)
-                    stmt.setDouble(2, lp.precio)
-                    stmt.setInt(3, lp.idPedido)
-                    stmt.setInt(4, lp.idProducto)
+                connection.prepareStatement(sql).use { stmt ->
+                    stmt.setInt(1, linea.cantidad)
+                    stmt.setDouble(2, linea.precio)
+                    stmt.setInt(3, linea.idPedido)
+                    stmt.setInt(4, linea.idProducto)
                     stmt.executeUpdate()
                 }
             }
         } catch (e: SQLException) {
-            throw SQLException("Error al insertar Linea de pedido")
+            throw SQLException("Error al insertar pedido")
+        }
+    }
+    // Obtiene todas las líneas de pedido asociadas a un pedido dado.
+     fun obtenerPorPedido(idPedido: Int): List<LineaPedido> {
+        try {
+            Database.getConnection().use { connection ->
+                val lista = mutableListOf<LineaPedido>()
+                val sql = "SELECT * FROM LineaPedido WHERE idPedido = ?"
+                connection.prepareStatement(sql).use { stmt ->
+                    stmt.setInt(1, idPedido)
+                    stmt.executeQuery().use { rs ->
+                        while (rs.next()) {
+                            lista.add(
+                                LineaPedido(
+                                    cantidad = rs.getInt("cantidad"),
+                                    precio = rs.getDouble("precio"),
+                                    idPedido = rs.getInt("idPedido"),
+                                    idProducto = rs.getInt("idProducto")
+                                )
+                            )
+                        }
+                    }
+                }
+                return lista
+            }
+        } catch (e: SQLException) {
+            throw SQLException("Error al obtener el pedido")
         }
     }
 }

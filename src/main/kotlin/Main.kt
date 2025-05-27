@@ -1,63 +1,73 @@
 // Hago una importacion de dependencias
+
 import data.Database
 import service.*
 import java.sql.Connection
 
-/**
- * Función principal que inicializa la base de datos y realiza operaciones CRUD de ejemplo.
- *
- * El programa realiza las siguientes operaciones:
- * 1. Establece una conexión con la base de datos
- * 2. Configura la transaccionalidad (autoCommit = false)
- * 3. Crea instancias de los servicios necesarios
- * 4. Ejecuta operaciones de inserción de datos de prueba
- * 5. Maneja posibles errores con rollback
- *
- * @throws Exception Si ocurre algún error durante la ejecución de las operaciones
- */
 
 fun main() {
-    Database.getConnection().use { conn: Connection? ->
-        conn?.autoCommit = false
+    try {
+        Database.getConnection().use { conn: Connection? ->
+            conn?.autoCommit = false
+                try {
 
-    // Aquí se llama a AppDatabase para abrir una conexion
-        try {
-            val usuarioService = UsuarioService()
-            val productoService = ProductoService()
-            val pedidoService = PedidoService()
-            val lineaPedidoService = LineaPedidoService()
+                    val usuarioService = UsuarioService()
+                    val productoService = ProductoService()
+                    val pedidoService = PedidoService()
+                    val lineaPedidoService = LineaPedidoService()
 
-            // Usuarios
-            usuarioService.crear("Facundo Pérez", "facuper@mail.com")
-            usuarioService.crear("Ataulfo Rodríguez", "ataurod@mail.com")
-            usuarioService.crear("Cornelio Ramírez", "Cornram@mail.com")
+                    // Usuarios
+                    usuarioService.crear("Facundo Pérez", "facuper@mail.com")
+                    usuarioService.crear("Ataulfo Rodríguez", "ataurod@mail.com")
+                    usuarioService.crear("Cornelio Ramírez", "Cornram@mail.com")
 
-            // Productos
-            productoService.crear("Ventilador", 10.0, 2)
-            productoService.crear("Abanico", 150.0, 47)
-            productoService.crear("Estufa", 24.99, 1)
+                    // Productos
+                    productoService.crear("Ventilador", 10.0, 2)
+                    productoService.crear("Abanico", 150.0, 47)
+                    productoService.crear("Estufa", 24.99, 1)
 
-            // Pedidos
-            pedidoService.crear(2, 160.0)
-            pedidoService.crear(1, 20.0)
-            pedidoService.crear(2, 150.0)
+                    // Pedidos
+                    pedidoService.crear(2, 160.0)
+                    pedidoService.crear(1, 20.0)
+                    pedidoService.crear(2, 150.0)
 
-            // Líneas de Pedido
-            lineaPedidoService.crear(1, 1, 1, 10.0)
-            lineaPedidoService.crear(1, 2, 1, 150.0)
-            lineaPedidoService.crear(2, 1, 2, 20.0)
-            lineaPedidoService.crear(3, 2, 1, 150.0)
+                    // Líneas de Pedido
+                    lineaPedidoService.crear(1, 1, 1, 10.0)
+                    lineaPedidoService.crear(1, 2, 1, 150.0)
+                    lineaPedidoService.crear(2, 1, 2, 20.0)
+                    lineaPedidoService.crear(3, 2, 1, 150.0)
 
-            conn?.commit()
-            println("Datos insertados correctamente.")
+                    println("Datos insertados.")
 
-        } catch (e: Exception) {
-            try {
-                conn?.rollback()
-            } catch (e: Exception) {
-                println("Error en el Rollback")
-            }
-            println("Error en la ejecución: ${e.message}")
+                    // Ejercicio 3: Consultas
+                    println("--- Líneas de pedido con ID 1 ---")
+                    // Imprime las líneas de pedido correspondientes al pedido con ID 1.
+                    // Devuelve una lista de líneas de pedido para el pedido especificado.
+                    lineaPedidoService.obtenerLineasDePedido(1).forEach { println(it) }
+
+                    println("--- Total gastado por Ataulfo Rodríguez ---")
+                    // Calcula e imprime el total gastado por el usuario "Ataulfo Rodríguez".
+                    // devuelve la suma total de los importes de los pedidos realizados por ese usuario.
+                    val total = pedidoService.obtenerTotalGastadoPor("Ataulfo Rodríguez")
+                    println("Total: $total €")
+
+                    println("--- Usuarios que compraron un Abanico ---")
+                    // Muestra los usuarios que han comprado un producto llamado "Abanico".
+                    // Una lista de usuarios que realizaron compras del abanico.
+                    usuarioService.obtenerUsuariosQueCompraron("Abanico").forEach { println(it) }
+
+                    conn?.commit()
+                    // Muestra un error si hay algun problema
+                } catch (e: Exception) {
+                    try{
+                        println("Error en: ${e.message}")
+                        conn?.rollback()
+                    }catch (e: Exception) {
+                        println("Error en rollback")
+                    }
+                }
         }
+    } catch (e: Exception) {
+        println("Error: ${e.message}")
     }
 }

@@ -2,15 +2,17 @@ package data.dao
 // Importacion de dependencias
 import data.Database
 import model.Producto
+import java.sql.Connection
 import java.sql.SQLException
+import kotlin.io.use
 
 class ProductoDao() {
     // Esta función prepara y ejecuta un SQL con los datos del objeto.
-    fun insertar(producto: Producto) {
+     fun insertar(producto: Producto) {
         try {
-            Database.getConnection().use { conn ->
+            Database.getConnection().use { connection ->
                 val sql = "INSERT INTO Producto (nombre, precio, stock) VALUES (?, ?, ?)"
-                conn.prepareStatement(sql).use { stmt ->
+                connection.prepareStatement(sql).use { stmt ->
                     stmt.setString(1, producto.nombre)
                     stmt.setDouble(2, producto.precio)
                     stmt.setInt(3, producto.stock)
@@ -18,7 +20,7 @@ class ProductoDao() {
                 }
             }
         } catch (e: SQLException) {
-            throw SQLException("Error al insertar producto.")
+            throw SQLException("Error al insertar producto")
         }
     }
 }
