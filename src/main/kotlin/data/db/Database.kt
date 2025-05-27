@@ -10,7 +10,7 @@ object Database {
         return try {
             DriverManager.getConnection("jdbc:h2:./db", "sa", "")
         } catch (e: SQLException) {
-            throw IllegalStateException("Error al conectar con la base de datos H2")
+            throw SQLException("Error al conectar con la base de datos H2")
         }
     }
 }
