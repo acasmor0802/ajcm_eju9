@@ -7,8 +7,8 @@ import java.sql.Connection
 
 fun main() {
     try {
-        Database.getConnection().use { conn: Connection? ->
-            conn?.autoCommit = false
+        Database.getConnection().use { conn: Connection ->
+            conn.autoCommit = false
                 try {
 
                     val usuarioService = UsuarioService()
@@ -56,12 +56,12 @@ fun main() {
                     // Una lista de usuarios que realizaron compras del abanico.
                     usuarioService.obtenerUsuariosQueCompraron("Abanico").forEach { println(it) }
 
-                    conn?.commit()
+                    conn.commit()
                     // Muestra un error si hay algun problema
                 } catch (e: Exception) {
                     try{
                         println("Error en: ${e.message}")
-                        conn?.rollback()
+                        conn.rollback()
                     }catch (e: Exception) {
                         println("Error en rollback")
                     }

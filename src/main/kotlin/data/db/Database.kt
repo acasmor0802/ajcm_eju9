@@ -8,7 +8,7 @@ import java.sql.SQLException
 object Database {
     fun getConnection(): Connection {
         return try {
-            DriverManager.getConnection("jdbc:h2:./db", "sa", "")
+            DriverManager.getConnection("jdbc:h2:./db/eju9", "sa", "")
         } catch (e: SQLException) {
             throw SQLException("Error al conectar con la base de datos H2")
         }
