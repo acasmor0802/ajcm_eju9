@@ -18,8 +18,8 @@ import java.sql.Connection
 
 fun main() {
     try {
-        Database.getConnection().use { conn: Connection? ->
-            conn?.autoCommit = false
+        Database.getConnection().use { conn: Connection ->
+            conn.autoCommit = false
 
             // Aquí se llama a AppDatabase para abrir una conexion
             try {
@@ -49,12 +49,12 @@ fun main() {
                 lineaPedidoService.crear(2, 1, 2, 20.0)
                 lineaPedidoService.crear(3, 2, 1, 150.0)
 
-                conn?.commit()
+                conn.commit()
                 println("Datos insertados correctamente.")
 
             } catch (e: Exception) {
                 try {
-                    conn?.rollback()
+                    conn.rollback()
                 } catch (e: Exception) {
                     println("Error en el Rollback")
                 }
