@@ -138,5 +138,3 @@ Toda la funcionalidad principal se ejecuta en un bloque `try/catch` externo. En 
     - Obtener líneas de pedido por ID
 
 ---
-
-```
