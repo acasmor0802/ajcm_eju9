@@ -23,7 +23,7 @@ class Controlador(
      */
     fun iniciar() {
 
-        while (true) {
+        while (curso) {
             consola.limpiar() // Limpia la pantalla
             consola.mostrar(
                 """
