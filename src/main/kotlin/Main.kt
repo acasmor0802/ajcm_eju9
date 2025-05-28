@@ -27,8 +27,6 @@ fun main() {
     val servicioProducto = ProductoService(ProductoDao(dataSource))
     val servicioUsuario = UsuarioService(UsuarioDao(dataSource))
 
-    consola.mostrar("Servicios creados correctamente.", true)
-
     val controlador = Controlador(
         servicioLinea,
         servicioPedido,
@@ -37,8 +35,6 @@ fun main() {
         consola, // Usar la misma consola
         dataSource
     )
-
-    consola.mostrar("Controlador creado. Iniciando...", true)
 
     controlador.iniciar()
 
