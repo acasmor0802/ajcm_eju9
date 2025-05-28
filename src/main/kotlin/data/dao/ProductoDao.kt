@@ -1,16 +1,14 @@
 package data.dao
 // Importacion de dependencias
-import data.Database
 import model.Producto
-import java.sql.Connection
 import java.sql.SQLException
-import kotlin.io.use
+import javax.sql.DataSource
 
-class ProductoDao() : IProductoDao {
+class ProductoDao(private val dataSource: DataSource) : IProductoDao {
     // Esta función prepara y ejecuta un SQL con los datos del objeto.
     override fun insertar(producto: Producto) {
         try {
-            Database.getConnection().use { connection ->
+            dataSource.connection.use { connection ->
                 val sql = "INSERT INTO Producto (nombre, precio, stock) VALUES (?, ?, ?)"
                 connection.prepareStatement(sql).use { stmt ->
                     stmt.setString(1, producto.nombre)
@@ -29,9 +27,10 @@ class ProductoDao() : IProductoDao {
      * @return número de filas afectadas.
      */
 
-    override fun eliminarPorPrecio(precio: Double): Int {
+    override fun eliminarPorPrecio(precio: Double?): Int {
+        if (precio == null) throw IllegalArgumentException("El precio no puede ser nulo")
         try {
-            Database.getConnection().use { connection ->
+            dataSource.connection.use { connection ->
                 val sql = "DELETE FROM Producto WHERE precio = ?"
                 connection.prepareStatement(sql).use { stmt ->
                     stmt.setDouble(1, precio)
@@ -43,6 +42,7 @@ class ProductoDao() : IProductoDao {
         }
     }
 
+
     /**
      * Actualiza el precio de un producto dado su id.
      * @param idProducto Identificador del producto a modificar.
@@ -52,7 +52,7 @@ class ProductoDao() : IProductoDao {
      */
     override fun actualizarPrecio(idProducto: Int, nuevoPrecio: Double): Int {
         try {
-            Database.getConnection().use { connection ->
+            dataSource.connection.use { connection ->
                 val sql = "UPDATE Producto SET precio = ? WHERE id = ?"
                 connection.prepareStatement(sql).use { stmt ->
                     stmt.setDouble(1, nuevoPrecio)

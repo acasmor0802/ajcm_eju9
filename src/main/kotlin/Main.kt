@@ -1,52 +1,52 @@
+import app.Controlador
+import com.zaxxer.hikari.HikariDataSource
 import data.Database
+import data.dao.LineaPedidoDao
+import data.dao.PedidoDao
+import data.dao.ProductoDao
+import data.dao.UsuarioDao
+import data.db.DataSourceFactory
 import service.*
+import ui.Consola
 import java.sql.SQLException
 
 fun main() {
-    try {
-        Database.getConnection().use { connection ->
+    val consola = Consola()
 
-            try {
-                connection.autoCommit = false
+    val dataSource = try {
+        DataSourceFactory.create()
+    } catch (e: Exception) {
+        consola.mostrarError("Problema al crear DataSource: ${e.message}")
+        return
+    }
 
-                val usuarioService: IUsuarioService = UsuarioService()
-                val productoService: IProductoService = ProductoService()
-                val pedidoService: IPedidoService = PedidoService()
-                val lineaPedidoService: ILineaPedidoService = LineaPedidoService()
-                // Usuarios
-                usuarioService.crear("Facundo Pérez", "facuper@mail.com")
-                usuarioService.crear("Ataulfo Rodríguez", "ataurod@mail.com")
-                usuarioService.crear("Cornelio Ramírez", "Cornram@mail.com")
+    consola.mostrar("DataSource creado correctamente.", true)
 
-                // Productos
-                productoService.crear("Ventilador", 10.0, 2)
-                productoService.crear("Abanico", 150.0, 47)
-                productoService.crear("Estufa", 24.99, 1)
+    val servicioLinea = LineaPedidoService(LineaPedidoDao(dataSource))
+    val servicioPedido = PedidoService(PedidoDao(dataSource), LineaPedidoDao(dataSource))
+    val servicioProducto = ProductoService(ProductoDao(dataSource))
+    val servicioUsuario = UsuarioService(UsuarioDao(dataSource))
 
-                // Pedidos
-                pedidoService.crear(2, 160.0)
-                pedidoService.crear(1, 20.0)
-                pedidoService.crear(2, 150.0)
+    consola.mostrar("Servicios creados correctamente.", true)
 
-                // Líneas de Pedido
-                lineaPedidoService.crear(1, 1, 1, 10.0)
-                lineaPedidoService.crear(1, 2, 1, 150.0)
-                lineaPedidoService.crear(2, 1, 2, 20.0)
-                lineaPedidoService.crear(3, 2, 1, 150.0)
+    val controlador = Controlador(
+        servicioLinea,
+        servicioPedido,
+        servicioProducto,
+        servicioUsuario,
+        consola, // Usar la misma consola
+        dataSource
+    )
 
-                connection.commit()
+    consola.mostrar("Controlador creado. Iniciando...", true)
 
-            } catch (e: Exception) {
-                try {
-                    connection.rollback()
-                    println("Error: ${e.message}")
-                } catch (e: Exception) {
-                    println("Error durante rollback")
-                    println("Error original: ${e.message}")
-                }
-            }
+    controlador.iniciar()
+
+    if (dataSource is HikariDataSource) {
+        try {
+            dataSource.close()
+        } catch (e: Exception) {
+            consola.mostrarError("Problemas al cerrar el DataSource: ${e.message}")
         }
-    } catch (e: SQLException) {
-        println("Error: ${e.message}")
     }
 }

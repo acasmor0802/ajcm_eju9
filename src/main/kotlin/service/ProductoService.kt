@@ -1,17 +1,14 @@
 package service
 // Importacion de dependencias
 import data.dao.IProductoDao
-import data.dao.ProductoDao
 import model.Producto
-import java.sql.Connection
 
 // Servicio para manejar operaciones relacionadas con productos.
-class ProductoService() : IProductoService {
-    private val dao: IProductoDao = ProductoDao()
+class ProductoService(private val productoDao: IProductoDao) : IProductoService {
     // Crea un nuevo producto con nombre, precio y stock especificados.
     // Esta función construye un objeto y lo envía a DAO para insertarlo en la base de datos.
     override fun crear(nombre: String, precio: Double, stock: Int) {
-        dao.insertar(Producto(nombre = nombre, precio = precio, stock = stock))
+        productoDao.insertar(Producto(nombre = nombre, precio = precio, stock = stock))
     }
 
     /**
@@ -20,7 +17,7 @@ class ProductoService() : IProductoService {
      */
 
     override fun eliminarPorPrecio(precio: Double): Int {
-        return dao.eliminarPorPrecio(precio)
+        return productoDao.eliminarPorPrecio(precio)
     }
 
     /**
@@ -29,7 +26,7 @@ class ProductoService() : IProductoService {
      * @param nuevoPrecio Nuevo precio a asignar.
      */
     override fun actualizarPrecioProducto(idProducto: Int, nuevoPrecio: Double) {
-        dao.actualizarPrecio(idProducto, nuevoPrecio)
+        productoDao.actualizarPrecio(idProducto, nuevoPrecio)
     }
 
 }

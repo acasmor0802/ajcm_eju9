@@ -5,12 +5,13 @@ import data.Database
 import model.Pedido
 import java.sql.Connection
 import java.sql.SQLException
+import javax.sql.DataSource
 
-class PedidoDao() : IPedidoDao {
+class PedidoDao(private val dataSource: DataSource) : IPedidoDao {
     // Esta función prepara y ejecuta un SQL con los datos del objeto.
     override fun insertar(pedido: Pedido) {
         try {
-            Database.getConnection().use { connection ->
+            dataSource.connection.use { connection ->
                 val sql = "INSERT INTO Pedido (precioTotal, idUsuario) VALUES (?, ?)"
                 connection.prepareStatement(sql).use { stmt ->
                     stmt.setDouble(1, pedido.precioTotal)
@@ -29,7 +30,7 @@ class PedidoDao() : IPedidoDao {
      */
     override fun eliminarPorId(id: Int): Int {
         try {
-            Database.getConnection().use { connection ->
+            dataSource.connection.use { connection ->
                 val sql = "DELETE FROM Pedido WHERE id = ?"
                 connection.prepareStatement(sql).use { stmt ->
                     stmt.setInt(1, id)
@@ -46,7 +47,7 @@ class PedidoDao() : IPedidoDao {
     importe total de todos los pedidos realizados por el usuario especificado.*/
     override fun obtenerTotalGastadoPorUsuario(nombreUsuario: String): Double {
         try {
-            Database.getConnection().use { connection ->
+            dataSource.connection.use { connection ->
                 val sql = """
             SELECT SUM(p.precioTotal) AS total
             FROM Pedido p

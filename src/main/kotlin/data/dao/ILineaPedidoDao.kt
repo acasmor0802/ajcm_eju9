@@ -7,4 +7,5 @@ interface ILineaPedidoDao {
     fun eliminarPorPedido(idPedido: Int): Int
     fun actualizarLineaPorId(idLinea: Int, idProducto: Int, nuevoPrecio: Double): Int
     fun obtenerPorPedido(idPedido: Int): List<LineaPedido>
+    fun obtenerLineasPorUsuario(nombreUsuario: String): List<LineaPedido>
 }

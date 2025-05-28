@@ -5,13 +5,12 @@ import data.dao.LineaPedidoDao
 import model.LineaPedido
 
 // Servicio para manejar operaciones relacionadas con líneas de pedido.
-class LineaPedidoService() : ILineaPedidoService {
-    private val dao: ILineaPedidoDao = LineaPedidoDao()
+class LineaPedidoService(private val lineaPedidoDao: ILineaPedidoDao) : ILineaPedidoService {
 
     // Crea una nueva línea de pedido con el ID del pedido, ID del producto, cantidad y precio especificados.
     // Esta función construye un objeto y lo envía a DAO para insertarlo en la base de datos.
     override fun crear(idPedido: Int, idProducto: Int, cantidad: Int, precio: Double) {
-        dao.insertar(LineaPedido(cantidad = cantidad, precio = precio, idPedido = idPedido, idProducto = idProducto))
+        lineaPedidoDao.insertar(LineaPedido(cantidad = cantidad, precio = precio, idPedido = idPedido, idProducto = idProducto))
     }
 
     /**
@@ -21,10 +20,10 @@ class LineaPedidoService() : ILineaPedidoService {
      * @param nuevoPrecio Nuevo precio a asignar.
      */
     override fun actualizarLineaPedido(idLinea: Int, idProducto: Int, nuevoPrecio: Double) {
-        dao.actualizarLineaPorId(idLinea, idProducto, nuevoPrecio)
+        lineaPedidoDao.actualizarLineaPorId(idLinea, idProducto, nuevoPrecio)
     }
 
     override fun obtenerLineasDePedido(idPedido: Int): List<LineaPedido> {
-        return dao.obtenerPorPedido(idPedido)
+        return lineaPedidoDao.obtenerPorPedido(idPedido)
     }
 }

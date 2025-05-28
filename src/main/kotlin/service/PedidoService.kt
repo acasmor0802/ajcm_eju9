@@ -5,20 +5,17 @@ import data.dao.IPedidoDao
 import data.dao.LineaPedidoDao
 import data.dao.PedidoDao
 import model.Pedido
-import java.sql.Connection
 
 /**
  * Servicio para manejar operaciones relacionadas con pedidos.
  */
-class PedidoService() : IPedidoService {
-    private val dao: IPedidoDao = PedidoDao()
-    private val lineaDao: ILineaPedidoDao = LineaPedidoDao()
+class PedidoService(private val pedidoDao: IPedidoDao, private val lineaDao: ILineaPedidoDao) : IPedidoService {
 
     /**
      * Crea un nuevo pedido para el usuario indicado con el precio total dado.
      */
     override fun crear(idUsuario: Int, precioTotal: Double) {
-        dao.insertar(Pedido(precioTotal = precioTotal, idUsuario = idUsuario))
+        pedidoDao.insertar(Pedido(precioTotal = precioTotal, idUsuario = idUsuario))
     }
 
     /**
@@ -29,13 +26,13 @@ class PedidoService() : IPedidoService {
         lineaDao.eliminarPorPedido(idPedido)
 
         // Borrar el pedido y chequear cuántos se eliminaron
-        val pedidosBorrados = dao.eliminarPorId(idPedido)
+        val pedidosBorrados = pedidoDao.eliminarPorId(idPedido)
         if (pedidosBorrados == 0) {
             throw IllegalArgumentException("No existe ningún pedido con id=$idPedido")
         }
     }
 
     override fun obtenerTotalGastadoPor(nombreUsuario: String): Double {
-        return dao.obtenerTotalGastadoPorUsuario(nombreUsuario)
+        return pedidoDao.obtenerTotalGastadoPorUsuario(nombreUsuario)
     }
 }

@@ -3,12 +3,13 @@ package data.dao
 import data.Database
 import model.LineaPedido
 import java.sql.SQLException
+import javax.sql.DataSource
 
-class LineaPedidoDao() : ILineaPedidoDao {
+class LineaPedidoDao(private val dataSource: DataSource) : ILineaPedidoDao {
     // Esta función prepara y ejecuta un SQL con los datos del objeto.
     override fun insertar(lp: LineaPedido) {
         try {
-            Database.getConnection().use { connection ->
+            dataSource.connection.use { connection ->
                 val sql = "INSERT INTO LineaPedido (cantidad, precio, idPedido, idProducto) VALUES (?, ?, ?, ?)"
                 connection.prepareStatement(sql).use { stmt ->
                     stmt.setInt(1, lp.cantidad)
@@ -28,7 +29,7 @@ class LineaPedidoDao() : ILineaPedidoDao {
      */
     override fun eliminarPorPedido(idPedido: Int): Int {
         try {
-            Database.getConnection().use { connection ->
+            dataSource.connection.use { connection ->
                 val sql = "DELETE FROM LineaPedido WHERE idPedido = ?"
                 connection.prepareStatement(sql).use { stmt ->
                     stmt.setInt(1, idPedido)
@@ -50,7 +51,7 @@ class LineaPedidoDao() : ILineaPedidoDao {
      */
     override fun actualizarLineaPorId(idLinea: Int, idProducto: Int, nuevoPrecio: Double): Int {
         try {
-            Database.getConnection().use { connection ->
+            dataSource.connection.use { connection ->
                 val sql = "UPDATE LineaPedido SET idProducto = ?, precio = ? WHERE id = ?"
                 connection.prepareStatement(sql).use { stmt ->
                     stmt.setInt(1, idProducto)
@@ -88,6 +89,40 @@ class LineaPedidoDao() : ILineaPedidoDao {
             }
         } catch (e: SQLException) {
             throw SQLException("Error al obtener el pedido")
+        }
+    }
+
+    override fun obtenerLineasPorUsuario(nombreUsuario: String): List<LineaPedido> {
+        val lista = mutableListOf<LineaPedido>()
+        try {
+            dataSource.connection.use { connection ->
+                val sql = """
+                SELECT lp.cantidad, lp.precio, lp.idPedido, lp.idProducto
+                FROM LineaPedido lp
+                JOIN Pedido p ON lp.idPedido = p.id
+                JOIN Usuario u ON p.idUsuario = u.id
+                WHERE u.nombre = ?
+            """.trimIndent()
+
+                connection.prepareStatement(sql).use { stmt ->
+                    stmt.setString(1, nombreUsuario)
+                    stmt.executeQuery().use { rs ->
+                        while (rs.next()) {
+                            lista.add(
+                                LineaPedido(
+                                    cantidad = rs.getInt("cantidad"),
+                                    precio = rs.getDouble("precio"),
+                                    idPedido = rs.getInt("idPedido"),
+                                    idProducto = rs.getInt("idProducto")
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+            return lista
+        } catch (e: SQLException) {
+            throw SQLException("Error al obtener las líneas de pedido por usuario")
         }
     }
 }
